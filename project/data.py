@@ -1,0 +1,118 @@
+import requests
+import json
+import pymongo
+from datetime import datetime
+from bson.json_util import dumps
+now = datetime.now()
+import time
+import threading
+import asyncio
+# Задаем параметры прокси и аутентификации
+proxy = {
+    'http': 'http://nMuoL2:HTX1m6@64.226.55.115:8000',
+    'https': 'http://nMuoL2:HTX1m6@64.226.55.115:8000'
+}
+# создал бд
+db_client = pymongo.MongoClient("mongodb://localhost:27017")
+project_db = db_client.project
+raybet_db = project_db.raybet
+
+def creat_json(data):
+    map1 = {}
+    map2 = {}
+    for i in data['result']['odds']:
+        if i['match_stage']=='map1' and i['odds_group_id']==16854:
+            map1[i['name']]=i['odds']
+        if i['match_stage']=='map2' and i['odds_group_id']==16877:
+            map2[i['name']]=i['odds']
+    dict = {
+    '_id': data['result']['id'], 
+    'game_name': data['result']['game_name'],
+    'match_name': data['result']['match_name'],
+    'tournament_short_name': data['result']['tournament_short_name'],
+    'odds':[{
+            'Date time': f'{now.strftime("%d/%m/%Y %H:%M")}',
+            'Winner': {
+                data['result']['odds'][0]['name']: data['result']['odds'][0]['odds'],
+                data['result']['odds'][1]['name']: data['result']['odds'][1]['odds']
+            },
+            'Handicap': {
+                data['result']['odds'][0]['name'] + ' ' + data['result']['odds'][6]['value']: data['result']['odds'][6]['odds'],
+                data['result']['odds'][1]['name'] + ' ' + data['result']['odds'][7]['value']: data['result']['odds'][7]['odds']
+            },
+            'Total map': {
+                'Over 2.5': data['result']['odds'][9]['odds'],
+                'Under 2.5': data['result']['odds'][8]['odds']
+            },
+            'Map 1': map1,
+            'Map 2': map2
+        
+    }]
+    }
+    raybet_db.insert_one(dict)
+
+def update_data(data):
+    map1 = {}
+    map2 = {}
+    for i in data['result']['odds']:
+        if i['match_stage']=='map1' and i['odds_group_id']==16854:
+            map1[i['name']]=i['odds']
+        if i['match_stage']=='map2' and i['odds_group_id']==16877:
+            map2[i['name']]=i['odds']
+
+    new_odds_data = {
+            'Date time': f'{now.strftime("%d/%m/%Y %H:%M")}',
+            'Winner': {
+                data['result']['odds'][0]['name']: data['result']['odds'][0]['odds'],
+                data['result']['odds'][1]['name']: data['result']['odds'][1]['odds']
+            },
+            'Handicap': {
+                data['result']['odds'][0]['name'] + ' ' + data['result']['odds'][6]['value']: data['result']['odds'][6]['odds'],
+                data['result']['odds'][1]['name'] + ' ' + data['result']['odds'][7]['value']: data['result']['odds'][7]['odds']
+            },
+            'Total map': {
+                'Over 2.5': data['result']['odds'][9]['odds'],
+                'Under 2.5': data['result']['odds'][8]['odds']
+            },
+            'Map 1': map1,
+            'Map 2': map2
+        }
+    raybet_db.update_one({'_id':data['result']['id']},{'$push':{'odds':new_odds_data}})
+    
+
+def get_data(id,there_is_flag):
+    try:
+        response = requests.get(f'https://vncfgameinfo.365raylines.com/v2/odds?match_id={id}', proxies=proxy)
+        # Проверяем успешность запроса
+        if response.status_code == 200:
+            print("Запрос успешно отправлен через прокси.")
+            print("Ответ от сервера:")
+            data = response.json()
+            if there_is_flag==False:
+                creat_json(data)
+            else:
+                update_data(data)
+        else:
+            print(f"Произошла ошибка: {response.status_code}")
+    except Exception as e:
+        print(f"Произошла ошибка при отправке запроса: {str(e)}")
+
+
+def input_url(url):
+    there_is_flag = True
+    id = url.split('/')[-1]
+    if raybet_db.find_one({'_id':int(id)})==None:
+        there_is_flag = False
+    get_data(id,there_is_flag)
+
+list_of_urs = ['https://rbvn3.com/match/37943927','https://rbvn3.com/match/37945562','https://rbvn3.com/match/37943924']
+async def periodic_operation(interval):
+    i = 3
+    global list_of_urs 
+    while True:
+        await asyncio.sleep(interval)
+        input_url(list_of_urs[i%len(list_of_urs)])
+        print(f'обновляется {list_of_urs[i%len(list_of_urs)]}')
+        i+=1
+loop = asyncio.get_event_loop()
+loop.run_until_complete(periodic_operation(5))
