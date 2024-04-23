@@ -16,10 +16,20 @@ proxy = {
 db_client = pymongo.MongoClient("mongodb://localhost:27017")
 project_db = db_client.project
 raybet_db = project_db.raybet
+urls_db = project_db.urls
+
+def delete_json(id):
+    raybet_db.delete_one({'_id':id})
+
 
 def creat_json(data):
     map1 = {}
     map2 = {}
+    status=['','prematch','live','end']
+    status_code = data['result']['status']
+    if status_code==3:
+        print('Событие уже завершено')
+        return
     for i in data['result']['odds']:
         if i['match_stage']=='map1' and i['odds_group_id']==16854:
             map1[i['name']]=i['odds']
@@ -30,6 +40,7 @@ def creat_json(data):
     'game_name': data['result']['game_name'],
     'match_name': data['result']['match_name'],
     'tournament_short_name': data['result']['tournament_short_name'],
+    'Status':status[status_code],
     'odds':[{
             'Date time': f'{now.strftime("%d/%m/%Y %H:%M")}',
             'Winner': {
@@ -54,6 +65,11 @@ def creat_json(data):
 def update_data(data):
     map1 = {}
     map2 = {}
+    status=['','prematch','live','end']
+    status_code = data['result']['status']
+    if status_code==3:
+        delete_json(data['result']['id'])
+        return
     for i in data['result']['odds']:
         if i['match_stage']=='map1' and i['odds_group_id']==16854:
             map1[i['name']]=i['odds']
@@ -77,6 +93,7 @@ def update_data(data):
             'Map 1': map1,
             'Map 2': map2
         }
+    raybet_db.update_one({'_id':data['result']['id']},{'$set':{'Status':status[status_code]}})
     raybet_db.update_one({'_id':data['result']['id']},{'$push':{'odds':new_odds_data}})
     
 
@@ -105,14 +122,19 @@ def input_url(url):
         there_is_flag = False
     get_data(id,there_is_flag)
 
-list_of_urs = ['https://rbvn3.com/match/37943927','https://rbvn3.com/match/37945562','https://rbvn3.com/match/37943924']
+# list_of_urs = ['https://rbvn3.com/match/37945562','']
 async def periodic_operation(interval):
-    i = 3
-    global list_of_urs 
+    i=0
     while True:
+        list_of_urls = []
+        collection_urls = urls_db.find()
+        for collection in collection_urls:
+            list_of_urls.append(collection['url'])
         await asyncio.sleep(interval)
-        input_url(list_of_urs[i%len(list_of_urs)])
-        print(f'обновляется {list_of_urs[i%len(list_of_urs)]}')
+        input_url(list_of_urls[i%len(list_of_urls)])
+        print(f'обновляется {list_of_urls[i%len(list_of_urls)]}')
         i+=1
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(periodic_operation(5))
+
