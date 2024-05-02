@@ -19,8 +19,9 @@ raybet_db = project_db.raybet
 urls_db = project_db.urls
 
 def delete_json(id):
+    urls_db.delete_one({'_id':id})
     raybet_db.delete_one({'_id':id})
-
+    
 
 def creat_json(data):
     map1 = {}
@@ -128,13 +129,17 @@ async def periodic_operation(interval):
     while True:
         list_of_urls = []
         collection_urls = urls_db.find()
-        for collection in collection_urls:
-            list_of_urls.append(collection['url'])
-        await asyncio.sleep(interval)
-        input_url(list_of_urls[i%len(list_of_urls)])
-        print(f'обновляется {list_of_urls[i%len(list_of_urls)]}')
-        i+=1
+        count_urls = urls_db.count_documents({})
+        if count_urls>0:
+            for collection in collection_urls:
+                list_of_urls.append(collection['url'])
+            await asyncio.sleep(interval)
+            input_url(list_of_urls[i%len(list_of_urls)])
+            print(f'обновляется {list_of_urls[i%len(list_of_urls)]}')
+            i+=1
+        else:
+            continue
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(periodic_operation(5))
+loop.run_until_complete(periodic_operation(1))
 
