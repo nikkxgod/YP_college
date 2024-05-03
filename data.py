@@ -42,6 +42,7 @@ def creat_json(data):
     'match_name': data['result']['match_name'],
     'tournament_short_name': data['result']['tournament_short_name'],
     'Status':status[status_code],
+    'teams':[data['result']['team'][0]['team_name'],data['result']['team'][1]['team_name']],
     'odds':[{
             'Date time': f'{now.strftime("%d/%m/%Y %H:%M")}',
             'Winner': {
