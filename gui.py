@@ -50,10 +50,11 @@ def open_event(event_id):
 
     ax.legend()
 
-    ax.autoscale()  # Автоматическое масштабирование графика
-    max_y = ax.get_ylim()[1]  # Получаем максимальное значение по оси Y
+    max_y = max(max(y_winner1), max(y_winner2), max(y_map1_team1), max(y_map1_team2), max(y_map2_team1), max(y_map2_team2))
     ax.set_ylim(0, max_y)  # Устанавливаем ограничение для оси Y
+    ax.autoscale()  # Автоматическое масштабирование графика
     ax.set_yticks(np.linspace(1, max_y, 50))
+    plt.xticks([])
     canvas = FigureCanvasTkAgg(fig, master=frame_chart)
     canvas.draw()
     canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -84,13 +85,13 @@ def open_event(event_id):
             line_map2_team1.set_visible(True)
             line_map2_team2.set_visible(True)
         fig.canvas.draw()
-
+        
     winner_button = tk.Button(new_window, text="Winner", command=winner_line)
-    winner_button.pack(side='left', padx=7)
+    winner_button.pack(side='left', padx=5)
     map1_button = tk.Button(new_window, text="Map 1", command=map1_line)
-    map1_button.pack(side='left', padx=7)
+    map1_button.pack(side='left', padx=5)
     map2_button = tk.Button(new_window, text="Map 2", command=map2_line)
-    map2_button.pack(side='left', padx=7)
+    map2_button.pack(side='left', padx=5)
 
 def add_event():
     global buttons
@@ -123,7 +124,7 @@ def add_to_bd():
     id = int(url.split('/')[-1])
     urls_db.insert_one({'_id': id, 'url': url})
     input_url.delete(0, 'end')
-    messagebox.showinfo("Уведомление", f"Событие добавится через {raybet_db.count_documents({})*2}c. Нажмите кнопку обновить")
+    messagebox.showinfo("Уведомление", f"Событие добавится через {raybet_db.count_documents({})+2*2}c. Нажмите кнопку обновить")
 
 def add_url_btn_click():
     input_label.place(x=500, y=5)
