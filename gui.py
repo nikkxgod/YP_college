@@ -1,10 +1,10 @@
-#TODO: убрать x линию ну что б там не было надписей
+#TODO: убрать x линию ну что б там не было надписей, сделать базу общедоступной, код 200 - заканчивается матч. Открывать bo1 матчи
 import numpy as np
 import pymongo
 import tkinter as tk
 import matplotlib.pyplot as plt
 from tkinter import Toplevel, messagebox
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 window = tk.Tk()
 window.geometry('1240x900')
@@ -32,7 +32,7 @@ def open_event(event_id):
         y_map2_team2.append(float(i['Map 2'][team_name2]))
 
     new_window = Toplevel(window)
-    new_window.geometry('1240x900')
+    new_window.geometry('1240x1000')
     new_window.title(buttons[event_id]['name']['text'])
     new_window.resizable(0, 0)
 
@@ -92,6 +92,10 @@ def open_event(event_id):
     map1_button.pack(side='left', padx=5)
     map2_button = tk.Button(new_window, text="Map 2", command=map2_line)
     map2_button.pack(side='left', padx=5)
+    toolbar = NavigationToolbar2Tk(canvas, new_window)
+    toolbar.update()
+    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
 
 def add_event():
     global buttons

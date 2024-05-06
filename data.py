@@ -69,7 +69,7 @@ def update_data(data):
     map2 = {}
     status=['','prematch','live','end']
     status_code = data['result']['status']
-    if status_code==3:
+    if status_code==3 or data['code']==200:
         delete_json(data['result']['id'])
         return
     for i in data['result']['odds']:
