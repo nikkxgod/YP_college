@@ -1,4 +1,5 @@
-#TODO: убрать x линию ну что б там не было надписей, сделать базу общедоступной, код 200 - заканчивается матч. Открывать bo1 матчи
+#TODO: сделать базу общедоступной
+#валидация ссылки
 import numpy as np
 import pymongo
 import tkinter as tk
@@ -18,18 +19,20 @@ def open_event(event_id):
     team_name2 = event['teams'][1]
     y_winner1 = []
     y_winner2 = []
-    y_map1_team1 = []
-    y_map1_team2 = []
-    y_map2_team1 = []
-    y_map2_team2 = []
+    if event['round']=='bo3':
+        y_map1_team1 = []
+        y_map1_team2 = []
+        y_map2_team1 = []
+        y_map2_team2 = []
     
     for i in event['odds']:
         y_winner1.append(float(i['Winner'][team_name1]))
         y_winner2.append(float(i['Winner'][team_name2]))
-        y_map1_team1.append(float(i['Map 1'][team_name1]))
-        y_map1_team2.append(float(i['Map 1'][team_name2]))
-        y_map2_team1.append(float(i['Map 2'][team_name1]))
-        y_map2_team2.append(float(i['Map 2'][team_name2]))
+        if event['round']=='bo3':
+            y_map1_team1.append(float(i['Map 1'][team_name1]))
+            y_map1_team2.append(float(i['Map 1'][team_name2]))
+            y_map2_team1.append(float(i['Map 2'][team_name1]))
+            y_map2_team2.append(float(i['Map 2'][team_name2]))
 
     new_window = Toplevel(window)
     new_window.geometry('1240x1000')
@@ -43,14 +46,17 @@ def open_event(event_id):
 
     line_winner_team1, = ax.plot(x, y_winner1, label=team_name1)
     line_winner_team2, = ax.plot(x, y_winner2, label=team_name2)
-    line_map1_team1, = ax.plot(x, y_map1_team1, label=team_name1)
-    line_map1_team2, = ax.plot(x, y_map1_team2, label=team_name2)
-    line_map2_team1, = ax.plot(x, y_map2_team1, label=team_name1)
-    line_map2_team2, = ax.plot(x, y_map2_team2, label=team_name2)
+    if event['round']=='bo3':
+        line_map1_team1, = ax.plot(x, y_map1_team1, label=team_name1)
+        line_map1_team2, = ax.plot(x, y_map1_team2, label=team_name2)
+        line_map2_team1, = ax.plot(x, y_map2_team1, label=team_name1)
+        line_map2_team2, = ax.plot(x, y_map2_team2, label=team_name2)
 
     ax.legend()
-
-    max_y = max(max(y_winner1), max(y_winner2), max(y_map1_team1), max(y_map1_team2), max(y_map2_team1), max(y_map2_team2))
+    if event['round']=='bo3':
+        max_y = max(max(y_winner1), max(y_winner2), max(y_map1_team1), max(y_map1_team2), max(y_map2_team1), max(y_map2_team2))
+    else: 
+        max_y = max(max(y_winner1), max(y_winner2))
     ax.set_ylim(0, max_y)  # Устанавливаем ограничение для оси Y
     ax.autoscale()  # Автоматическое масштабирование графика
     ax.set_yticks(np.linspace(1, max_y, 50))
@@ -88,13 +94,18 @@ def open_event(event_id):
         
     winner_button = tk.Button(new_window, text="Winner", command=winner_line)
     winner_button.pack(side='left', padx=5)
-    map1_button = tk.Button(new_window, text="Map 1", command=map1_line)
-    map1_button.pack(side='left', padx=5)
-    map2_button = tk.Button(new_window, text="Map 2", command=map2_line)
-    map2_button.pack(side='left', padx=5)
+    if event['round']=='bo3':
+        map1_button = tk.Button(new_window, text="Map 1", command=map1_line)
+        map1_button.pack(side='left', padx=5)
+        map2_button = tk.Button(new_window, text="Map 2", command=map2_line)
+        map2_button.pack(side='left', padx=5)
+    last_update_label = tk.Label(new_window, text=f'Last update: {event['odds'][-1]['Date time'].split()[1]}')
+    last_update_label.pack(side='left',padx=20)
     toolbar = NavigationToolbar2Tk(canvas, new_window)
     toolbar.update()
     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+
 
 
 def add_event():
@@ -103,13 +114,13 @@ def add_event():
         button_data['name'].destroy()
         button_data['delete'].destroy()
     buttons.clear()
-
     i = 0
     events = raybet_db.find()
-    for event in events:
+    sorted_events = sorted(events, key=lambda x: x['start_time'])
+    for event in sorted_events:
         event_id = event['_id']
         buttons[event_id] = {}
-        buttons[event_id]['name'] = tk.Button(frame_main, text=f"{event['match_name']} ({str(event_id)})", width=45, command=lambda event_id=event_id: open_event(event_id))
+        buttons[event_id]['name'] = tk.Button(frame_main, text=f"{event['match_name']} {str(event['start_time']).split()[1][:5]}", width=45, command=lambda event_id=event_id: open_event(event_id))
         buttons[event_id]['delete'] = tk.Button(frame_main, image=delete_image, command=lambda event_id=event_id: delete_event(event_id))
         buttons[event_id]['name'].place(x=403, y=i * 27)
         buttons[event_id]['delete'].place(x=731, y=i * 27)

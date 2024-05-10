@@ -3,10 +3,10 @@ import json
 import pymongo
 from datetime import datetime
 from bson.json_util import dumps
-now = datetime.now()
 import time
 import threading
 import asyncio
+from datetime import datetime, timedelta
 # Задаем параметры прокси и аутентификации
 proxy = {
     'http': 'http://nMuoL2:HTX1m6@64.226.55.115:8000',
@@ -24,6 +24,8 @@ def delete_json(id):
     
 
 def creat_json(data):
+    now = datetime.now()
+    srart_time = datetime.strptime(data['result']['start_time'], "%Y-%m-%d %H:%M:%S") - timedelta(hours=5)
     map1 = {}
     map2 = {}
     status=['','prematch','live','end']
@@ -31,52 +33,61 @@ def creat_json(data):
     if status_code==3:
         print('Событие уже завершено')
         return
-    for i in data['result']['odds']:
-        if i['match_stage']=='map1' and i['odds_group_id']==16854:
-            map1[i['name']]=i['odds']
-        if i['match_stage']=='map2' and i['odds_group_id']==16877:
-            map2[i['name']]=i['odds']
+    if data['result']['game_name']=='CS2':
+        for i in data['result']['odds']:
+            if i['match_stage']=='map1' and i['odds_group_id']==16854:
+                map1[i['name']]=i['odds']
+            if i['match_stage']=='map2' and i['odds_group_id']==16877:
+                map2[i['name']]=i['odds']
+    elif data['result']['game_name']=='DOTA2':
+        for i in data['result']['odds']:
+            if i['match_stage']=='r1' and i['sort_index']==679550:
+                map1[i['name']]=i['odds']
+            if i['match_stage']=='r2' and i['sort_index']==674650:
+                map2[i['name']]=i['odds']
     dict = {
-    '_id': data['result']['id'], 
-    'game_name': data['result']['game_name'],
-    'match_name': data['result']['match_name'],
-    'tournament_short_name': data['result']['tournament_short_name'],
-    'Status':status[status_code],
-    'teams':[data['result']['team'][0]['team_name'],data['result']['team'][1]['team_name']],
-    'odds':[{
-            'Date time': f'{now.strftime("%d/%m/%Y %H:%M")}',
-            'Winner': {
-                data['result']['odds'][0]['name']: data['result']['odds'][0]['odds'],
-                data['result']['odds'][1]['name']: data['result']['odds'][1]['odds']
-            },
-            'Handicap': {
-                data['result']['odds'][0]['name'] + ' ' + data['result']['odds'][6]['value']: data['result']['odds'][6]['odds'],
-                data['result']['odds'][1]['name'] + ' ' + data['result']['odds'][7]['value']: data['result']['odds'][7]['odds']
-            },
-            'Total map': {
-                'Over 2.5': data['result']['odds'][9]['odds'],
-                'Under 2.5': data['result']['odds'][8]['odds']
-            },
-            'Map 1': map1,
-            'Map 2': map2
-        
-    }]
-    }
+        '_id': data['result']['id'], 
+        'game_name': data['result']['game_name'],
+        'match_name': data['result']['match_name'],
+        'tournament_short_name': data['result']['tournament_short_name'],
+        'start_time': srart_time,
+        'Status':status[status_code],
+        'round':data['result']['round'],
+        'teams':[data['result']['team'][0]['team_name'],data['result']['team'][1]['team_name']],
+        'odds':[{
+                'Date time': f'{now.strftime("%d/%m/%Y %H:%M")}',
+                'Winner': {
+                    data['result']['odds'][0]['name']: data['result']['odds'][0]['odds'],
+                    data['result']['odds'][1]['name']: data['result']['odds'][1]['odds']
+                },
+                'Map 1': map1,
+                'Map 2': map2
+            
+        }]
+        }
     raybet_db.insert_one(dict)
 
 def update_data(data):
+    now = datetime.now()
     map1 = {}
     map2 = {}
     status=['','prematch','live','end']
     status_code = data['result']['status']
-    if status_code==3 or data['code']==200:
+    if status_code==3:
         delete_json(data['result']['id'])
         return
-    for i in data['result']['odds']:
-        if i['match_stage']=='map1' and i['odds_group_id']==16854:
-            map1[i['name']]=i['odds']
-        if i['match_stage']=='map2' and i['odds_group_id']==16877:
-            map2[i['name']]=i['odds']
+    if data['result']['game_name']=='CS2':
+        for i in data['result']['odds']:
+            if i['match_stage']=='map1' and i['odds_group_id']==16854:
+                map1[i['name']]=i['odds']
+            if i['match_stage']=='map2' and i['odds_group_id']==16877:
+                map2[i['name']]=i['odds']
+    elif data['result']['game_name']=='DOTA2':
+        for i in data['result']['odds']:
+            if i['match_stage']=='r1' and i['sort_index']==679550:
+                map1[i['name']]=i['odds']
+            if i['match_stage']=='r2' and i['sort_index']==674650:
+                map2[i['name']]=i['odds']
 
     new_odds_data = {
             'Date time': f'{now.strftime("%d/%m/%Y %H:%M")}',
@@ -124,7 +135,6 @@ def input_url(url):
         there_is_flag = False
     get_data(id,there_is_flag)
 
-# list_of_urs = ['https://rbvn3.com/match/37945562','']
 async def periodic_operation(interval):
     i=0
     while True:
