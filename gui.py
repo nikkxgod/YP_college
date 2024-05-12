@@ -1,5 +1,5 @@
-#TODO: сделать базу общедоступной
-#валидация ссылки
+#TODO:
+#валидация ссылки, норм вид придать, в тг отстук
 import numpy as np
 import pymongo
 import tkinter as tk
@@ -8,7 +8,7 @@ from tkinter import Toplevel, messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 window = tk.Tk()
-window.geometry('1240x900')
+window.geometry('1240x885')
 window.resizable(False, False)
 
 def open_event(event_id):
@@ -35,7 +35,7 @@ def open_event(event_id):
             y_map2_team2.append(float(i['Map 2'][team_name2]))
 
     new_window = Toplevel(window)
-    new_window.geometry('1240x1000')
+    new_window.geometry('1240x885')
     new_window.title(buttons[event_id]['name']['text'])
     new_window.resizable(0, 0)
 

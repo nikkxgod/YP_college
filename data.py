@@ -2,7 +2,6 @@ import requests
 import json
 import pymongo
 from datetime import datetime
-from bson.json_util import dumps
 import time
 import threading
 import asyncio
@@ -44,6 +43,12 @@ def creat_json(data):
             if i['match_stage']=='r1' and i['sort_index']==679550:
                 map1[i['name']]=i['odds']
             if i['match_stage']=='r2' and i['sort_index']==674650:
+                map2[i['name']]=i['odds']
+    elif data['result']['game_name']=='无尽对决':
+        for i in data['result']['odds']:
+            if i['match_stage']=='r1' and i['sort_index']==2879800:
+                map1[i['name']]=i['odds']
+            if i['match_stage']=='r2' and i['sort_index']==2878950:
                 map2[i['name']]=i['odds']
     dict = {
         '_id': data['result']['id'], 
@@ -87,6 +92,12 @@ def update_data(data):
             if i['match_stage']=='r1' and i['sort_index']==679550:
                 map1[i['name']]=i['odds']
             if i['match_stage']=='r2' and i['sort_index']==674650:
+                map2[i['name']]=i['odds']
+    elif data['result']['game_name']=='无尽对决':
+        for i in data['result']['odds']:
+            if i['match_stage']=='r1' and i['sort_index']==2879800:
+                map1[i['name']]=i['odds']
+            if i['match_stage']=='r2' and i['sort_index']==2878950:
                 map2[i['name']]=i['odds']
 
     new_odds_data = {
