@@ -1,5 +1,5 @@
 #TODO:
-#валидация ссылки, норм вид придать, в тг отстук
+#норм вид придать
 import numpy as np
 import pymongo
 import tkinter as tk
@@ -8,7 +8,7 @@ from tkinter import Toplevel, messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 window = tk.Tk()
-window.geometry('1240x885')
+window.geometry('1240x885+150+0')
 window.resizable(False, False)
 
 def open_event(event_id):
@@ -133,13 +133,18 @@ def delete_event(event_id):
     buttons[event_id]['delete'].destroy()
     del buttons[event_id]
 
+
 def add_to_bd():
     global input_url
     url = input_url.get()
-    id = int(url.split('/')[-1])
-    urls_db.insert_one({'_id': id, 'url': url})
-    input_url.delete(0, 'end')
-    messagebox.showinfo("Уведомление", f"Событие добавится через {raybet_db.count_documents({})+2*2}c. Нажмите кнопку обновить")
+    if (url[:24]=='https://rbvn3.com/match/') and (url[24:].isdigit()==True) and (len(url[24:])==8):
+        id = int(url.split('/')[-1])
+        urls_db.insert_one({'_id': id, 'url': url})
+        input_url.delete(0, 'end')
+        messagebox.showinfo("Уведомление", f"Событие добавится через {raybet_db.count_documents({})+2*2}c. Нажмите кнопку обновить")
+    else:
+        messagebox.showinfo("Уведомление", f"Некорректная ссылка")
+        
 
 def add_url_btn_click():
     input_label.place(x=500, y=5)
