@@ -8,7 +8,7 @@ from tkinter import Toplevel, messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 window = tk.Tk()
-window.geometry('1240x885+150+0')
+window.geometry('420x885+0+0')
 window.resizable(False, False)
 
 def open_event(event_id):
@@ -122,8 +122,8 @@ def add_event():
         buttons[event_id] = {}
         buttons[event_id]['name'] = tk.Button(frame_main, text=f"{event['match_name']} {str(event['start_time']).split()[1][:5]}", width=45, command=lambda event_id=event_id: open_event(event_id))
         buttons[event_id]['delete'] = tk.Button(frame_main, image=delete_image, command=lambda event_id=event_id: delete_event(event_id))
-        buttons[event_id]['name'].place(x=403, y=i * 27)
-        buttons[event_id]['delete'].place(x=731, y=i * 27)
+        buttons[event_id]['name'].place(x=58, y=i * 27)
+        buttons[event_id]['delete'].place(x=386, y=i * 27)
         i += 1
 
 def delete_event(event_id):
@@ -139,17 +139,20 @@ def add_to_bd():
     url = input_url.get()
     if (url[:24]=='https://rbvn3.com/match/') and (url[24:].isdigit()==True) and (len(url[24:])==8):
         id = int(url.split('/')[-1])
-        urls_db.insert_one({'_id': id, 'url': url})
-        input_url.delete(0, 'end')
-        messagebox.showinfo("Уведомление", f"Событие добавится через {raybet_db.count_documents({})+2*2}c. Нажмите кнопку обновить")
+        if raybet_db.find_one({'_id':int(id)})==None:
+            urls_db.insert_one({'_id': id, 'url': url})
+            input_url.delete(0, 'end')
+            messagebox.showinfo("Уведомление", f"Событие добавится через {raybet_db.count_documents({})+2*2}c. Нажмите кнопку обновить")
+        else:
+            messagebox.showinfo("Уведомление", f"Событие уже добавлено")
     else:
         messagebox.showinfo("Уведомление", f"Некорректная ссылка")
         
 
 def add_url_btn_click():
-    input_label.place(x=500, y=5)
-    input_url.place(x=475, y=30)
-    add_to_bd_button.place(x=545, y=54)
+    input_label.place(x=155, y=5)
+    input_url.place(x=130, y=30)
+    add_to_bd_button.place(x=200, y=54)
     add_url_btn.place_forget()
 
 db_client = pymongo.MongoClient("mongodb://localhost:27017")
@@ -157,22 +160,22 @@ project_db = db_client.project
 urls_db = project_db.urls
 raybet_db = project_db.raybet
 
-frame_main = tk.Frame(window, width=1100, height=800, bg='green', pady=20)
-frame_buttons = tk.Frame(window, width=1100, height=100, bg='blue', pady=5)
+frame_main = tk.Frame(window, width=1240, height=800, bg='green', pady=20)
+frame_buttons = tk.Frame(window, width=1240, height=100, bg='blue', pady=5)
 
 input_url = tk.Entry(frame_buttons, width=35)
 add_url_btn = tk.Button(frame_buttons, text='Добавить событие', command=add_url_btn_click)
 input_label = tk.Label(frame_buttons, text='Вставьте ссылку на событие')
 add_to_bd_button = tk.Button(frame_buttons, text='Добавить', command=add_to_bd)
 refresh_image = tk.PhotoImage(file='refresh.png')
-refresh_button = tk.Button(image=refresh_image, command=add_event).place(x=425, y=20)
+refresh_button = tk.Button(image=refresh_image, command=add_event).place(x=10, y=20)
 delete_image = tk.PhotoImage(file='delete.png', height=20)
 
 buttons = {}
 
-frame_main.place(x=70, y=0)
-frame_buttons.place(x=70, y=800)
-add_url_btn.place(x=500, y=30)
+frame_main.place(x=0,y=0)
+frame_buttons.place(x=0, y=800)
+add_url_btn.place(x=155, y=30)
 
 add_event()
 window.mainloop()
