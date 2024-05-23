@@ -35,7 +35,7 @@ def open_event(event_id):
             y_map2_team2.append(float(i['Map 2'][team_name2]))
 
     new_window = Toplevel(window)
-    new_window.geometry('1240x885')
+    new_window.geometry('1100x885+423+0')
     new_window.title(buttons[event_id]['name']['text'])
     new_window.resizable(0, 0)
 
