@@ -120,8 +120,8 @@ def add_event():
     for event in sorted_events:
         event_id = event['_id']
         buttons[event_id] = {}
-        buttons[event_id]['name'] = tk.Button(frame_main, text=f"{event['match_name']} {str(event['start_time']).split()[1][:5]}", width=45, command=lambda event_id=event_id: open_event(event_id))
-        buttons[event_id]['delete'] = tk.Button(frame_main, image=delete_image, command=lambda event_id=event_id: delete_event(event_id))
+        buttons[event_id]['name'] = tk.Button(frame_main, text=f"{event['match_name']} {str(event['start_time']).split()[1][:5]}", width=45, command=lambda event_id=event_id: open_event(event_id),bg='#FFDAB9')
+        buttons[event_id]['delete'] = tk.Button(frame_main, image=delete_image, command=lambda event_id=event_id: delete_event(event_id),bg='#FFDAB9')
         buttons[event_id]['name'].place(x=58, y=i * 27)
         buttons[event_id]['delete'].place(x=386, y=i * 27)
         i += 1
@@ -160,15 +160,15 @@ project_db = db_client.project
 urls_db = project_db.urls
 raybet_db = project_db.raybet
 
-frame_main = tk.Frame(window, width=1240, height=800, bg='green', pady=20)
-frame_buttons = tk.Frame(window, width=1240, height=100, bg='blue', pady=5)
+frame_main = tk.Frame(window, width=1240, height=800, pady=20,bg='#000080')
+frame_buttons = tk.Frame(window, width=1240, height=100, bg='#000080', pady=5)
 
 input_url = tk.Entry(frame_buttons, width=35)
-add_url_btn = tk.Button(frame_buttons, text='Добавить событие', command=add_url_btn_click)
-input_label = tk.Label(frame_buttons, text='Вставьте ссылку на событие')
-add_to_bd_button = tk.Button(frame_buttons, text='Добавить', command=add_to_bd)
+add_url_btn = tk.Button(frame_buttons, text='Добавить событие', bg='#FFDAB9',command=add_url_btn_click)
+input_label = tk.Label(frame_buttons, text='Вставьте ссылку на событие',bg='#FFDAB9')
+add_to_bd_button = tk.Button(frame_buttons, text='Добавить', command=add_to_bd,bg='#FFDAB9')
 refresh_image = tk.PhotoImage(file='refresh.png')
-refresh_button = tk.Button(image=refresh_image, command=add_event).place(x=10, y=20)
+refresh_button = tk.Button(image=refresh_image, command=add_event,bg='#FFDAB9').place(x=10, y=20)
 delete_image = tk.PhotoImage(file='delete.png', height=20)
 
 buttons = {}
