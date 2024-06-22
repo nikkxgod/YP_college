@@ -1,11 +1,15 @@
-#TODO:
-#норм вид придать
+
+# import subprocess
+# import telegram
+# import data
+# subprocess.run(['python', 'data.py'])
 import numpy as np
 import pymongo
 import tkinter as tk
 import matplotlib.pyplot as plt
 from tkinter import Toplevel, messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+
 
 window = tk.Tk()
 window.geometry('420x885+0+0')
@@ -92,14 +96,14 @@ def open_event(event_id):
             line_map2_team2.set_visible(True)
         fig.canvas.draw()
         
-    winner_button = tk.Button(new_window, text="Winner", command=winner_line)
+    winner_button = tk.Button(new_window, text="Общая", command=winner_line)
     winner_button.pack(side='left', padx=5)
     if event['round']=='bo3':
-        map1_button = tk.Button(new_window, text="Map 1", command=map1_line)
+        map1_button = tk.Button(new_window, text="Карта 1", command=map1_line)
         map1_button.pack(side='left', padx=5)
-        map2_button = tk.Button(new_window, text="Map 2", command=map2_line)
+        map2_button = tk.Button(new_window, text="Карта 2", command=map2_line)
         map2_button.pack(side='left', padx=5)
-    last_update_label = tk.Label(new_window, text=f'Last update: {event['odds'][-1]['Date time'].split()[1]}')
+    last_update_label = tk.Label(new_window, text=f'Послдение обновление: {event['odds'][-1]['Date time'].split()[1]}')
     last_update_label.pack(side='left',padx=20)
     toolbar = NavigationToolbar2Tk(canvas, new_window)
     toolbar.update()
@@ -120,8 +124,8 @@ def add_event():
     for event in sorted_events:
         event_id = event['_id']
         buttons[event_id] = {}
-        buttons[event_id]['name'] = tk.Button(frame_main, text=f"{event['match_name']} {str(event['start_time']).split()[1][:5]}", width=45, command=lambda event_id=event_id: open_event(event_id),bg='#FFDAB9')
-        buttons[event_id]['delete'] = tk.Button(frame_main, image=delete_image, command=lambda event_id=event_id: delete_event(event_id),bg='#FFDAB9')
+        buttons[event_id]['name'] = tk.Button(frame_main, text=f"{event['match_name']} {str(event['start_time']).split()[1][:5]}", width=45, command=lambda event_id=event_id: open_event(event_id))
+        buttons[event_id]['delete'] = tk.Button(frame_main, image=delete_image, command=lambda event_id=event_id: delete_event(event_id))
         buttons[event_id]['name'].place(x=58, y=i * 27)
         buttons[event_id]['delete'].place(x=386, y=i * 27)
         i += 1
@@ -160,15 +164,15 @@ project_db = db_client.project
 urls_db = project_db.urls
 raybet_db = project_db.raybet
 
-frame_main = tk.Frame(window, width=1240, height=800, pady=20,bg='#000080')
-frame_buttons = tk.Frame(window, width=1240, height=100, bg='#000080', pady=5)
+frame_main = tk.Frame(window, width=1240, height=800, pady=20,bg='#ddeee8')
+frame_buttons = tk.Frame(window, width=1240, height=100, pady=5,bg='#ddeee8')
 
 input_url = tk.Entry(frame_buttons, width=35)
-add_url_btn = tk.Button(frame_buttons, text='Добавить событие', bg='#FFDAB9',command=add_url_btn_click)
-input_label = tk.Label(frame_buttons, text='Вставьте ссылку на событие',bg='#FFDAB9')
-add_to_bd_button = tk.Button(frame_buttons, text='Добавить', command=add_to_bd,bg='#FFDAB9')
+add_url_btn = tk.Button(frame_buttons, text='Добавить событие',command=add_url_btn_click)
+input_label = tk.Label(frame_buttons, text='Вставьте ссылку на событие')
+add_to_bd_button = tk.Button(frame_buttons, text='Добавить', command=add_to_bd)
 refresh_image = tk.PhotoImage(file='refresh.png')
-refresh_button = tk.Button(image=refresh_image, command=add_event,bg='#FFDAB9').place(x=10, y=20)
+refresh_button = tk.Button(image=refresh_image, command=add_event).place(x=10, y=20)
 delete_image = tk.PhotoImage(file='delete.png', height=20)
 
 buttons = {}
