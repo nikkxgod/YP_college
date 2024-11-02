@@ -8,8 +8,8 @@ import asyncio
 from datetime import datetime, timedelta
 # Задаем параметры прокси и аутентификации
 proxy = {
-    'http': 'http://nMuoL2:HTX1m6@64.226.55.115:8000',
-    'https': 'http://nMuoL2:HTX1m6@64.226.55.115:8000'
+    'http': 'http://L6rG3Y:UDAvqW@64.226.55.104:8000',
+    'https': 'http://L6rG3Y:UDAvqW@64.226.55.104:8000'
 }
 # создал бд
 db_client = pymongo.MongoClient("mongodb://localhost:27017")

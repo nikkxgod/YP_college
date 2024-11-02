@@ -1,8 +1,3 @@
-
-# import subprocess
-# import telegram
-# import data
-# subprocess.run(['python', 'data.py'])
 import numpy as np
 import pymongo
 import tkinter as tk
@@ -103,7 +98,7 @@ def open_event(event_id):
         map1_button.pack(side='left', padx=5)
         map2_button = tk.Button(new_window, text="Карта 2", command=map2_line)
         map2_button.pack(side='left', padx=5)
-    last_update_label = tk.Label(new_window, text=f'Послдение обновление: {event['odds'][-1]['Date time'].split()[1]}')
+    last_update_label = tk.Label(new_window, text=f'Последнее обновление: {event['odds'][-1]['Date time'].split()[1]}')
     last_update_label.pack(side='left',padx=20)
     toolbar = NavigationToolbar2Tk(canvas, new_window)
     toolbar.update()
