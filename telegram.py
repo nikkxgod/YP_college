@@ -5,7 +5,7 @@ import time
 bot = telebot.TeleBot('7159348995:AAE1Y_Ta2Ey9VPtPWiu6Vz5CIqRhOVbn1VI')
 chat_id =  '-1002064549773'
 def send_message(match_name,count_update):
-    stroka = (f'В маче {match_name} происходит какая-то активность с коэффициентами\n'
+    stroka = (f'В матче {match_name} происходит какая-то активность с коэффициентами\n'
               f'Количество изменений: {count_update}')
     bot.send_message(chat_id=chat_id, text=stroka)
 
@@ -82,3 +82,4 @@ async def periodic_operation(interval):
 update_events()
 loop = asyncio.get_event_loop()
 loop.run_until_complete(periodic_operation(1))
+

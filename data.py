@@ -38,12 +38,6 @@ def creat_json(data):
                 map1[i['name']]=i['odds']
             if i['match_stage']=='map2' and i['odds_group_id']==16877:
                 map2[i['name']]=i['odds']
-    elif data['result']['game_name']=='DOTA2':
-        for i in data['result']['odds']:
-            if i['match_stage']=='r1' and i['sort_index']==679550:
-                map1[i['name']]=i['odds']
-            if i['match_stage']=='r2' and i['sort_index']==674650:
-                map2[i['name']]=i['odds']
     elif data['result']['game_name']=='无尽对决':
         for i in data['result']['odds']:
             if i['match_stage']=='r1' and i['sort_index']==2879800:
@@ -86,12 +80,6 @@ def update_data(data):
             if i['match_stage']=='map1' and i['odds_group_id']==16854:
                 map1[i['name']]=i['odds']
             if i['match_stage']=='map2' and i['odds_group_id']==16877:
-                map2[i['name']]=i['odds']
-    elif data['result']['game_name']=='DOTA2':
-        for i in data['result']['odds']:
-            if i['match_stage']=='r1' and i['sort_index']==679550:
-                map1[i['name']]=i['odds']
-            if i['match_stage']=='r2' and i['sort_index']==674650:
                 map2[i['name']]=i['odds']
     elif data['result']['game_name']=='无尽对决':
         for i in data['result']['odds']:
