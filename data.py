@@ -2,8 +2,6 @@ import requests
 import json
 import pymongo
 from datetime import datetime
-import time
-import threading
 import asyncio
 from datetime import datetime, timedelta
 # Задаем параметры прокси и аутентификации
