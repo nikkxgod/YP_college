@@ -2,7 +2,7 @@ import telebot
 import asyncio
 import pymongo
 import time
-bot = telebot.TeleBot('7159348995:AAE1Y_Ta2Ey9VPtPWiu6Vz5CIqRhOVbn1VI')
+bot = telebot.TeleBot('вернуть потом ключ')
 chat_id =  '-1002064549773'
 def send_message(match_name,count_update):
     stroka = (f'В матче {match_name} происходит какая-то активность с коэффициентами\n'
