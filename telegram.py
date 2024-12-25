@@ -2,7 +2,7 @@ import telebot
 import asyncio
 import pymongo
 import time
-bot = telebot.TeleBot('вернуть потом ключ')
+bot = telebot.TeleBot('7159348995:AAE1Y_Ta2Ey9VPtPWiu6Vz5CIqRhOVbn1VI')
 chat_id =  '-1002064549773'
 def send_message(match_name,count_update):
     stroka = (f'В матче {match_name} происходит какая-то активность с коэффициентами\n'
@@ -10,11 +10,7 @@ def send_message(match_name,count_update):
     bot.send_message(chat_id=chat_id, text=stroka)
 
 
-db_client = pymongo.MongoClient("mongodb://localhost:27017")
-project_db = db_client.project
-raybet_db = project_db.raybet
 
-event_dict = {}
 
 def update_events():
     global event_dict
@@ -78,7 +74,11 @@ async def periodic_operation(interval):
                         event_dict[event_id]['count_update'] += 1
                         send_message(event['match_name'], event_dict[event_id]['count_update'])
                         event_dict[event_id]['Winner'] = winner
+db_client = pymongo.MongoClient("mongodb://localhost:27017")
+project_db = db_client.project
+raybet_db = project_db.raybet
 
+event_dict = {}
 update_events()
 loop = asyncio.get_event_loop()
 loop.run_until_complete(periodic_operation(1))

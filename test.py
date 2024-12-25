@@ -2,8 +2,8 @@ import sqlite3
 
 connection = sqlite3.connect("project.db")
 cursor = connection.cursor()
-last_datetime = ('2024-12-20 16:30:00',)
-print(last_datetime[0])
+a = cursor.execute("PRAGMA table_info(Match);").fetchall()
+print(a)
 
 
 
@@ -19,12 +19,6 @@ print(last_datetime[0])
 #https://rbvn3.com/match/38100543
 
 # #очистить таблицу
-cursor.execute("DELETE FROM Urls")
-cursor.execute("DELETE FROM Match")
-cursor.execute("DELETE FROM Odds")
-print('почистил')
-
-
 
 connection.commit()
 connection.close()

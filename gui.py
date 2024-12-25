@@ -184,7 +184,7 @@ def add_to_bd():
             connection.commit()
             input_url.delete(0, 'end')
             cursor.close()
-            messagebox.showinfo("Уведомление", f"Событие добавится через 4 c. Нажмите кнопку обновить")
+            messagebox.showinfo("Уведомление", f"Событие добавится через 5 c. Нажмите кнопку обновить")
         else:
             cursor.close()
             messagebox.showinfo("Уведомление", f"Событие уже добавлено")

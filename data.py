@@ -219,5 +219,5 @@ async def periodic_operation(interval):
             cursor.close()
             await asyncio.sleep(interval)
 
-loop = asyncio.run(periodic_operation(2))
+loop = asyncio.run(periodic_operation(1))
 
